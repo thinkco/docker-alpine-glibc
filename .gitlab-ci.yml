@@ -12,6 +12,20 @@ build-gitlab-master:
     - docker push "$CI_REGISTRY_IMAGE"
   only:
     - master
+    
+build-harbor-master:
+  # Official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - echo "$HARBOR_PASSWORD" | docker login -u "$HARBOR_USER" registry.thinkco.de --password-stdin
+  script:
+    - docker build --pull -t "thinkco/alpine-glibc" .
+    - docker push "thinkco/alpine-glibc"
+  only:
+    - master
 
 build-hub-master:
   # Official docker image.
