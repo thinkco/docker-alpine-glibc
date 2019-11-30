@@ -1,19 +1,19 @@
 # This file is a template, and might need editing before it works on your project.
-docker-build-gitlab-master:
+build-gitlab-master:
   # Official docker image.
   image: docker:latest
   stage: build
   services:
     - docker:dind
   before_script:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker build --pull -t "$CI_REGISTRY_IMAGE" .
     - docker push "$CI_REGISTRY_IMAGE"
   only:
     - master
 
-docker-build-hub-master:
+build-hub-master:
   # Official docker image.
   image: docker:latest
   stage: build
@@ -27,7 +27,7 @@ docker-build-hub-master:
   only:
     - master
 
-docker-build:
+build-gitlab-tagged:
   # Official docker image.
   image: docker:latest
   stage: build
@@ -35,9 +35,22 @@ docker-build:
     - docker:dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
   script:
     - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  except:
+    - master
+    
+build-hub-tagged:
+  # Official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+  script:
+    - docker build --pull -t "thinkco/alpine-glibc:$CI_COMMIT_REF_SLUG" .
+    - docker push "thinkco/alpine-glibc:$CI_COMMIT_REF_SLUG"
   except:
     - master
