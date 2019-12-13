@@ -2,7 +2,7 @@
 
 ![Alpine Linux](https://avatars2.githubusercontent.com/u/7600810?s=200&v=4)
 
-Base image for GraalVM Native Image builds.
+Base image for GraalVM Native Image runtime.
 
 ---
 Brought to you by Thinkco.de!
